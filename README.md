@@ -2,4 +2,8 @@
 
 - Logistics: June 2020, CMSA (Carnegie Mellon Sports Analytics) Camp
 - Language: R/RStudio
-- Goal: Exploring the Age of Empires 2 dataset: data structure, hypothesis testing, exploratory data analysis, and data visualization
+- Overview: Exploring the Age of Empires 2 dataset:
+  - data structure
+  - hypothesis testing 
+  - exploratory data analysis
+  - data visualization
