@@ -1,0 +1,47 @@
+---
+title: "H3 - Wins vs Losses (ESports significance)"
+output: html_document
+---
+
+```{r}
+ggplot(aoe2, aes(wins, losses, color = game_type)) +
+  geom_point() +
+  ggtitle("Correlation of Wins and Losses")
+
+```
+
+```{r}
+individual = aoe2[aoe2$game_type == "1v1 Random Map", ]
+team = aoe2[aoe2$game_type == "Team Random Map", ]
+
+ggplot(individual) +
+  geom_point(aes(wins, losses), color = "blue") +
+  ggtitle("Correlation of wins and losses in Individual Games")
+
+ggplot(team) +
+  geom_point(aes(wins, losses), color = "red") +
+  ggtitle("Correlation of wins and losses in Team Games")
+
+cor(individual$wins, individual$losses)
+cor(team$wins, team$losses)
+```
+
+```{r}
+ggplot(aoe2) +
+  geom_point(aes(wins, losses, color = game_type), alpha = 0.4) +
+  ggtitle("Correlation of Wins and Losses") + 
+  xlim(0, 1000) +
+  ylim(0, 1000) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_smooth(aes(x = wins, y = losses), color = "green")
+
+ggplot(aoe2[aoe2$games > 400, ]) +
+  geom_point(aes(wins, losses, color = game_type), alpha = 0.4) +
+  ggtitle("Correlation of Wins and Losses") + 
+  xlim(0, 1000) +
+  ylim(0, 1000) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_smooth(aes(x = wins, y = losses), color = "green")
+
+```
+

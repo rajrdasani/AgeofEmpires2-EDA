@@ -1,0 +1,53 @@
+---
+title: "H2 - Team vs Individual"
+output: html_document
+---
+
+```{r}
+ggplot(aoe2, aes(x = rank, y = rating, color = game_type)) + 
+  geom_point() + 
+  ggtitle("AOE2 Rating vs Rank")
+```
+
+```{r}
+gametype <- aoe2 %>%
+  group_by(game_type) %>%
+  summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses))
+
+gametype_long <- gather(gametype, game_type)
+gametype_long$map <- rep(c("1v1 Random Map", "Team Random Map"), 3)
+
+ggplot(gametype_long, aes(fill = map, y = value, x = game_type)) + 
+  geom_bar(position="dodge", stat="identity") + 
+  ggtitle("Popularity by type of Map/Game Mode")
+
+
+gametype_top300 <- aoe2[aoe2$rank <= 300, ] %>%
+  group_by(game_type) %>%
+  summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses))
+
+gametype_top300_long <- gather(gametype_top300, game_type)
+gametype_top300_long$map <- rep(c("1v1 Random Map", "Team Random Map"), 3)
+
+ggplot(gametype_top300_long, aes(fill = map, y = value, x = game_type)) + 
+  geom_bar(position="dodge", stat="identity") + 
+  ggtitle("Popularity by type of Map/Game Mode for top 300 players each")
+
+
+```
+
+```{r}
+aoe2
+aoe2 %>%
+  select(profile_id, drops, game_type) %>%
+  group_by(game_type) %>%
+  summarize(prob_drops = drops /sum(drops), game_type) %>%
+  distinct() %>%
+  ungroup %>%
+#Visual Display
+  ggplot(aes(x = game_type)) +
+  geom_bar(aes(y = prob_drops, fill = game_type), stat = "identity") +
+  theme_bw()
+
+```
+

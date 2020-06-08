@@ -1,0 +1,43 @@
+---
+title: 'Hypot1: Popularity by Country'
+output: html_document
+---
+Hypothesis:
+AOE2 is most popularly played in the US 
+
+```{r}
+aoe2 %>%
+  group_by(country) %>%
+  summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses), avgdrops = mean(drops)) %>%
+  arrange(desc(avggames))
+
+
+aoe2 %>%
+  group_by(country) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+
+pop_countries_count <- aoe2 %>%
+  group_by(country) %>%
+  summarise(count = n()) %>%
+  subset(count > 100) 
+
+pop_countries_v <- pop_countries_count$country
+
+pop_countries <- aoe2[aoe2$country %in% pop_countries_v, ]
+
+pop_countries_summary <- pop_countries %>%
+  group_by(country) %>%
+  summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses), avgdrops = mean(drops)) %>%
+  arrange(desc(avggames))
+
+pop_countries_summary
+
+```
+
+
+```{r}
+
+
+```
+

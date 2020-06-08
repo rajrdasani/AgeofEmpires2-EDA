@@ -71,6 +71,16 @@ ggplot(gametype_long, aes(fill = map, y = value, x = game_type)) +
 
 ```
 ```{r}
+aoe2$perc_wins  = aoe2$wins / aoe2$games
+
+
+aoe2common <- subset(aoe2, games > 200)
+arrange(aoe2common, desc(perc_wins))
+
+ggplot(aoe2common, aes(rank, perc_wins)) +
+  geom_point()
+
+aoe2common
 
 
 ```
