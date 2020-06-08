@@ -1,0 +1,77 @@
+---
+title: "EDA Scratch"
+output: html_document
+---
+
+```{r setup}
+library(tidyverse)
+library(ggplot2)
+```
+
+
+```{r}
+aoe2 <- read.csv("../Data/aoe2_leaderboard_sample.csv")
+View(aoe2)
+```
+
+```{r}
+str(aoe2)
+summary(aoe2)
+```
+
+
+```{r}
+aoe2[aoe2$game_type == 'Team Random Map',]
+
+```
+
+```{r}
+ggplot(aoe2, aes(x = rank, y = rating, color = game_type)) + 
+  geom_point() + 
+  ggtitle("AOE2 Rating vs Rank")
+```
+
+```{r}
+aoe2 %>%
+  group_by(country) %>%
+  summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses), avgdrops = mean(drops))
+
+
+ggplot(aoe2) +
+  geom_point(aes(wins, losses, color = game_type)) +
+  ggtitle("Correlation of wins and losses in game's entiriety")
+
+aoe2
+```
+
+```{r}
+gametype <- aoe2 %>%
+  group_by(game_type) %>%
+  summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses))
+
+gametype_long <- gather(gametype, game_type)
+gametype_long$map <- rep(c("1v1 Random Map", "Team Random Map"), 3)
+
+ggplot(gametype_long, aes(fill = map, y = value, x = game_type)) + 
+  geom_bar(position="dodge", stat="identity") + 
+  ggtitle("Popularity by type of Map/Game Mode")
+
+
+gametype <- aoe2[aoe2$rank <= 300, ] %>%
+  group_by(game_type) %>%
+  summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses))
+
+gametype_long <- gather(gametype, game_type)
+gametype_long$map <- rep(c("1v1 Random Map", "Team Random Map"), 3)
+
+ggplot(gametype_long, aes(fill = map, y = value, x = game_type)) + 
+  geom_bar(position="dodge", stat="identity") + 
+  ggtitle("Popularity by type of Map/Game Mode for top 300 players each")
+
+
+```
+```{r}
+
+
+```
+

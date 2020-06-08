@@ -1,0 +1,6 @@
+---
+title: 'Hypot1: Popularity by Country'
+output: html_document
+---
+Hypothesis:
+AOE2 is most popularly played in the US 
