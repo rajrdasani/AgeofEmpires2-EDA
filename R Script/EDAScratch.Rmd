@@ -77,11 +77,118 @@ aoe2$perc_wins  = aoe2$wins / aoe2$games
 aoe2common <- subset(aoe2, games > 200)
 arrange(aoe2common, desc(perc_wins))
 
-ggplot(aoe2common, aes(rank, perc_wins)) +
+ggplot(aoe2common[aoe2common$game_type == "Team Random Map", ], aes(rank, perc_wins)) +
   geom_point()
 
 aoe2common
+```
+
+```{r}
+
+aoe2 %>%
+  ggplot(aes(x = games)) +
+  stat_ecdf() +
+  geom_vline(xintercept = 125,
+             linetype = "dashed",
+             color = "darkred")
 
 
+nba_player_stats %>%
+  ggplot(aes(x = mp)) +
+  stat_ecdf() +
+  theme_bw() +
+  labs(x = "Minutes played",
+       y = "Proportion of NBA players") +
+  geom_vline(xintercept = 250,
+             linetype = "dashed",
+             color = "darkred")
+
+
+nba_complete_hclust <- 
+  hclust(dist(
+    dplyr::select(nba_filtered_stats,
+                  x3pa, trb)),
+         method = "complete")
+plot(nba_complete_hclust)
+```
+
+```{r}
+aoe2 %>%
+  ggplot(aes(x = rank)) +
+  stat_ecdf() +
+  geom_vline(xintercept = 36000,
+             linetype = "dashed",
+             color = "darkred",
+             stat.identity = TRUE)
+```
+
+
+```{r}
+aoe2_avgcountry <- aoe2 %>%
+  group_by(country) %>%
+  summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses), avgdrops = mean(drops), avgperc = mean(perc_wins)) %>%
+  arrange(desc(avggames))
+
+aoe2_avgcountry$scale_avggames <- scale(aoe2_avgcountry$avggames)
+aoe2_avgcountry$scale_avgperc <- scale(aoe2_avgcountry$avgperc)
+
+
+
+aoe2_hclust <- 
+  hclust(dist(
+    dplyr::select(aoe2_avgcountry,
+                  scale_avggames, scale_avgperc)),
+         method = "complete")
+plot(aoe2_hclust)
+
+
+aoe2_player_clusters <-
+  cutree(aoe2_hclust,
+         k = 6)
+
+
+aoe2_avgcountry <- aoe2_avgcountry %>%
+  mutate(clusters = 
+           as.factor(aoe2_player_clusters))
+
+
+aoe2_avgcountry %>%
+  ggplot(aes(x = scale_avggames, y = scale_avgperc,
+             color = clusters)) +
+  geom_point() +
+  ggthemes::scale_color_colorblind() +
+  theme_bw()
+```
+
+
+```{r}
+aoe2$scalerank <- scale(aoe2$rank)
+
+filtered_aoe2 <- aoe2[aoe2$rank < 1000, ]
+
+aoe2_hclust <- 
+  hclust(dist(
+    dplyr::select(filtered_aoe2,
+                  scalerank, perc_wins)),
+         method = "complete")
+plot(aoe2_hclust)
+
+
+aoe2_player_clusters <-
+  cutree(aoe2_hclust,
+         k = 3)
+
+
+filtered_aoe2 <- filtered_aoe2 %>%
+  mutate(clusters = 
+           as.factor(aoe2_player_clusters))
+
+
+filtered_aoe2 %>%
+  ggplot(aes(x = scalerank, y = perc_wins,
+             color = clusters)) +
+  geom_point() +
+  ggthemes::scale_color_colorblind() +
+  theme_bw()
 ```
 

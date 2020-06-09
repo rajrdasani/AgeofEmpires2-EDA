@@ -43,5 +43,13 @@ ggplot(aoe2[aoe2$games > 400, ]) +
   geom_abline(intercept = 0, slope = 1) +
   geom_smooth(aes(x = wins, y = losses), color = "green")
 
+ggplot(aoe2[aoe2$games < 300, ]) +
+  geom_point(aes(wins, losses, color = game_type), alpha = 0.4) +
+  ggtitle("Correlation of Wins and Losses") + 
+  xlim(0, 400) +
+  ylim(0, 400) +
+  geom_abline(intercept = 0, slope = 1) +
+  geom_smooth(aes(x = wins, y = losses), color = "green")
+
 ```
 

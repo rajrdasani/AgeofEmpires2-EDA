@@ -1,0 +1,53 @@
+---
+title: "Cluster - Grouping Best Players"
+output: html_document
+---
+
+```{r}
+library(ggdendro)
+```
+
+```{r}
+aoe2 %>%
+  ggplot(aes(x = rating)) +
+  stat_ecdf() +
+  geom_vline(xintercept = 1250,
+              linetype = "dashed",
+              color = "darkred")
+```
+
+```{r}
+
+aoe2$scalerating <- scale(aoe2$rating)
+aoe2$scalepercwins <- scale(aoe2$perc_wins)
+
+filtered_aoe2 <- aoe2[aoe2$rating > 2200, ]
+
+aoe2_hclust <- 
+  hclust(dist(
+    dplyr::select(filtered_aoe2,
+                  scalerating, scalepercwins)),
+         method = "complete")
+plot(aoe2_hclust)
+
+
+aoe2_player_clusters <-
+  cutree(aoe2_hclust,
+         k = 3)
+
+
+filtered_aoe2 <- filtered_aoe2 %>%
+  mutate(clusters = 
+           as.factor(aoe2_player_clusters))
+
+
+filtered_aoe2 %>%
+  ggplot(aes(x = scalerating, y = scalepercwins,
+             color = clusters)) +
+  geom_point() +
+  ggthemes::scale_color_colorblind() +
+  theme_bw()
+```
+
+
+

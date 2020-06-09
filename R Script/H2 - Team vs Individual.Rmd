@@ -36,18 +36,5 @@ ggplot(gametype_top300_long, aes(fill = map, y = value, x = game_type)) +
 
 ```
 
-```{r}
-aoe2
-aoe2 %>%
-  select(profile_id, drops, game_type) %>%
-  group_by(game_type) %>%
-  summarize(prob_drops = drops /sum(drops), game_type) %>%
-  distinct() %>%
-  ungroup %>%
-#Visual Display
-  ggplot(aes(x = game_type)) +
-  geom_bar(aes(y = prob_drops, fill = game_type), stat = "identity") +
-  theme_bw()
 
-```
 
