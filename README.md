@@ -8,7 +8,8 @@
   - hypothesis testing 
   - exploratory data analysis
   - data visualization
- - TOC: 
+
+## TOC: 
  1. Game Overview
  2. Hypothesis 1: Teams Drops vs Individual Drops
  3. Hypothesis 2: Subset by Country 
