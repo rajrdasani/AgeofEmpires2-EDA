@@ -8,6 +8,7 @@
   - hypothesis testing 
   - exploratory data analysis
   - data visualization
+- All scripting information/work will be in the "RScript" folder, labeled appropriately 
 
 ## TOC (for presentation) 
  1. Game Overview
