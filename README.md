@@ -12,7 +12,7 @@
 
 ## TOC (for presentation) 
  1. Game Overview
- 2. Topic 1: Teams Drops vs Individual Drops
+ 2. Topic 1: Teams Drops vs Individual Drops (done by partner)
  - Hypothesis: A player is more likely to get dropped from a Team Match.
  3. Topic 2: Most Popular/Competitive Country 
  - Hypothesis: AOE2 will be most popular and competitive in the US 
