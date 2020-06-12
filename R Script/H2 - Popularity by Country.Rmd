@@ -1,0 +1,158 @@
+---
+title: 'Hypot2: Popularity by Country'
+output: html_document
+---
+Hypothesis:
+AOE2 is most popularly played in the US 
+
+```{r}
+library(ggplot2)
+library(tidyr)
+```
+
+Let's first start off by seeing the countries with the most amount of players 
+
+```{r}
+aoe2 %>%
+  group_by(country) %>%
+  summarise(count = n()) %>%
+  subset(count > 100) %>%
+  arrange(desc(count))
+```
+
+The most significant gap in the data seems to be between Argentina (AR) and Great Britain (GB) where the count falls from 403 to 284. Past Great Britain all the countries lie in the 100 to 300 range. 
+
+```{r}
+pop_countries_count <- aoe2 %>%
+  group_by(country) %>%
+  summarise(count = n()) %>%
+  subset(count > 400) %>%
+  arrange(desc(count))
+
+pop_countries_count
+```
+
+Let's select these countries in our popular countries vector and define the dataset "pop_countries" as players only from these countries.
+```{r}
+pop_countries_v <- pop_countries_count$country
+pop_countries_v <- pop_countries_v[!is.na(pop_countries_v)]
+pop_countries_v
+
+pop_countries <- aoe2[aoe2$country %in% pop_countries_v, ]
+```
+
+In order to test popularity, lets summarise each country's data at each stat
+```{r}
+pop_countries_totals <- pop_countries %>%
+  group_by(country) %>%
+  summarise(totalgames = sum(games), totalwins = sum(wins), totallosses = sum(losses), totaldrops = sum(drops)) %>%
+  arrange(desc(totalgames))
+
+pop_countries_totals
+```
+
+Let's graph it to see how it looks.
+
+```{r}
+test <- gather(pop_countries_totals, country)
+colnames(test) <- c("stat", "value")
+test$country <- rep(c("Denmark", "United States", "France", "Argentina"), 4)
+
+ggplot(test, aes(fill = stat, y = value, x = country)) +
+  geom_bar(position="dodge", stat="identity") 
+
+
+```
+
+While this graph does show Denmark's dominance in total games, wins, losses, and drops, the data has a lot more to show, and looking to average games might show more about the game's culture/competitiveness in a country. 
+
+```{r}
+pop_countries_averages <- pop_countries %>%
+  group_by(country) %>%
+  summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses), avgdrops = mean(drops)) %>%
+  arrange(desc(avgwins))
+
+pop_countries_averages
+
+```
+
+Now lets graph it.
+
+```{r}
+pop_countries_averages_long <- gather(pop_countries_averages, country)
+colnames(pop_countries_averages_long) <- c("stat", "value")
+pop_countries_averages_long$country <- rep(c("Denmark", "United States", "France", "Argentina"), 4)
+
+ggplot(pop_countries_averages_long, aes(fill = country, y = value, x = stat)) +
+  geom_bar(position="dodge", stat="identity") 
+```
+
+The average drops statistic seems to be pretty insignificant here, so lets take that out and finalize our graph! 
+
+```{r}
+pop_countries_averages$avgdrops <- NULL
+pop_countries_averages
+
+pop_countries_averages_long <- gather(pop_countries_averages, country)
+colnames(pop_countries_averages_long) <- c("stat", "value")
+pop_countries_averages_long$country <- rep(c("Denmark", "United States", "France", "Argentina"), 3)
+pop_countries_averages_long$stat <- c(rep("Average Games", 4), rep("Average Wins", 4), 
+                                      rep("Average Losses", 4))
+
+
+ggplot(pop_countries_averages_long, aes(fill = country, y = value, x = stat)) +
+  geom_bar(position="dodge", stat="identity") +
+  ggtitle("Average Player Stats in the Countries with the Most Players", 
+          subtitle = "Each Country has over 400 players") +
+  xlab("Statistic") +
+  ylab("Value") +
+  labs(fill = "Country") +
+  geom_text(aes(label=round(value, 1)), position=position_dodge(width=0.9), vjust=-0.25)
+```
+
+Interesting Insights:
+1. Denmark still remains at the top with the best average player stats.
+2. In terms of percentage, France and US would be tied for 2nd.
+3. The average US player, who plays 3.2 less games on average then the average Denmark player, only loses an average of 0.4 less games, providing a generally significant difference for us to disprove our hypothesis
+
+
+For fun, lets make the colors of the bars match the country they are representing.  
+
+```{r}
+gdURL <- "http://www.stat.ubc.ca/~jenny/notOcto/STAT545A/examples/gapminder/data/gapminderCountryColors.txt"
+countryColors <- read.delim(file = gdURL, as.is = 3) # protect color
+str(countryColors)
+head(countryColors)
+jColors <- countryColors$color
+names(jColors) <- countryColors$country
+head(jColors)
+
+ggplot(pop_countries_averages_long, aes(fill = country, y = value, x = stat)) +
+  geom_bar(position="dodge", stat="identity") +
+  ggtitle("Average Player Stats in the Countries with the Most Players", 
+          subtitle = "Each Country has over 400 players") +
+  xlab("Statistic") +
+  ylab("Value") +
+  labs(fill = "Country") +
+  geom_text(aes(label=round(value, 1)), position=position_dodge(width=0.9), vjust=-0.25) +
+  scale_fill_manual(values = jColors)
+```
+
+Unfortunately, the colors are not very distinct, so we will use the first full graphic.
+
+
+Test Code / Scratch: 
+```{r}
+
+# aoe2 %>%
+#   group_by(country) %>%
+#   summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses), avgdrops = mean(drops), avgpercwins = mean(perc_wins)) %>%
+#   arrange(desc(avggames))
+# 
+# 
+# aoe2 %>%
+#   group_by(country) %>%
+#   summarise(count = n()) %>%
+#   arrange(desc(count))
+
+```

@@ -5,6 +5,11 @@ output: html_document
 
 ```{r}
 library(ggdendro)
+library(dplyr)
+library(ggplot2)
+library(ggdendro)
+library(ggthemes)
+aoe2 <- read.csv("../Data/aoe2_leaderboard_sample.csv")
 ```
 
 ```{r}
@@ -17,7 +22,7 @@ aoe2 %>%
 ```
 
 ```{r}
-
+aoe2$perc_wins <- aoe2$wins / aoe2$games
 aoe2$scalerating <- scale(aoe2$rating)
 aoe2$scalepercwins <- scale(aoe2$perc_wins)
 
@@ -28,26 +33,50 @@ aoe2_hclust <-
     dplyr::select(filtered_aoe2,
                   scalerating, scalepercwins)),
          method = "complete")
-plot(aoe2_hclust)
 
+plot(aoe2_hclust) +
+  abline(h = 1.4, lty = 2)
 
 aoe2_player_clusters <-
   cutree(aoe2_hclust,
-         k = 3)
-
+         k = 5)
 
 filtered_aoe2 <- filtered_aoe2 %>%
   mutate(clusters = 
            as.factor(aoe2_player_clusters))
-
 
 filtered_aoe2 %>%
   ggplot(aes(x = scalerating, y = scalepercwins,
              color = clusters)) +
   geom_point() +
   ggthemes::scale_color_colorblind() +
-  theme_bw()
+  theme_bw() +
+  ggtitle("Clustering of Best Players") +
+  xlab("Rating, normalized") +
+  ylab("Percentage of Wins, normalized") +
+  theme(legend.position = "bottom")
+
+filtered_aoe2 %>%
+  ggplot(aes(x = scalerating, y = scalepercwins,
+             color = clusters, label = name)) +
+  geom_point() +
+  ggthemes::scale_color_colorblind() +
+  theme_bw() +
+  ggtitle("Clustering of Best Players") +
+  xlab("Rating, normalized") +
+  ylab("Percentage of Wins, normalized") +
+  theme(legend.position = "bottom")
+
 ```
 
+```{r}
+mean(aoe2$perc_wins)
+sd(aoe2$perc_wins)
+```
 
+```{r}
+filtered_aoe2 %>%
+  group_by(clusters) %>%
+  summarise(avgrank = mean(rank), avgrating = mean(rating), avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses), avgpercwins = mean(perc_wins))
+```
 

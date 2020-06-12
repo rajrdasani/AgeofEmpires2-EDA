@@ -11,7 +11,6 @@ library(ggplot2)
 
 ```{r}
 aoe2 <- read.csv("../Data/aoe2_leaderboard_sample.csv")
-View(aoe2)
 ```
 
 ```{r}

@@ -4,10 +4,15 @@ output: html_document
 ---
 
 ```{r}
+library(ggplot2)
+library(tidyr)
+```
+
+
+```{r}
 ggplot(aoe2, aes(wins, losses, color = game_type)) +
   geom_point() +
   ggtitle("Correlation of Wins and Losses")
-
 ```
 
 ```{r}
@@ -29,11 +34,12 @@ cor(team$wins, team$losses)
 ```{r}
 ggplot(aoe2) +
   geom_point(aes(wins, losses, color = game_type), alpha = 0.4) +
-  ggtitle("Correlation of Wins and Losses") + 
+  ggtitle("The Positive Correlation of Wins and Losses, split by game type") + 
   xlim(0, 1000) +
   ylim(0, 1000) +
   geom_abline(intercept = 0, slope = 1) +
-  geom_smooth(aes(x = wins, y = losses), color = "green")
+  geom_smooth(aes(x = wins, y = losses), color = "green") +
+  labs(color = "Game Type")
 
 ggplot(aoe2[aoe2$games > 400, ]) +
   geom_point(aes(wins, losses, color = game_type), alpha = 0.4) +
@@ -51,5 +57,12 @@ ggplot(aoe2[aoe2$games < 300, ]) +
   geom_abline(intercept = 0, slope = 1) +
   geom_smooth(aes(x = wins, y = losses), color = "green")
 
+```
+
+```{r}
+ggplot(aoe2, aes(games, color = game_type)) +
+  geom_bar() +
+  xlim(100, 500) +
+  ggtitle("Games Played, between 100 and 500, split by game type")
 ```
 

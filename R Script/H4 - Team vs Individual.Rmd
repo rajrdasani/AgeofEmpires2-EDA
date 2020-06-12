@@ -1,0 +1,66 @@
+---
+title: "H2 - Team vs Individual"
+output: html_document
+---
+
+Hypothesis: Team Random Map is a more active more than Individual. 
+
+```{r}
+library(ggplot2)
+library(tidyr)
+```
+
+Let's first see how ratings compare for the leaderboards.
+
+```{r}
+ggplot(aoe2, aes(x = rank, y = rating, color = game_type)) + 
+  geom_point() + 
+  ggtitle("AOE2 Rating vs Rank")
+```
+
+By this graphic alone, it seems to pretty clearly show that the team mode is played significantly more than the individual mode overall, but let's see if this is true per player.
+
+
+```{r}
+gametype <- aoe2 %>%
+  group_by(game_type) %>%
+  summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses))
+
+gametype_long <- gather(gametype, game_type)
+gametype_long$map <- rep(c("1v1 Random Map", "Team Random Map"), 3)
+
+ggplot(gametype_long, aes(fill = map, y = value, x = game_type)) + 
+  geom_bar(position="dodge", stat="identity") + 
+  ggtitle("Popularity by type of Map/Game Mode")
+```
+
+So there does not seem to be a big distinction in terms of average games, wins, or losses between map for all players. We suspect these averages are brought down by the players who do not play as many games as the top players, so lets look into the top 300 players to see if this pattern holds up or if it show the popularity of the team random map game that the scatterplot above showed.
+
+
+```{r}
+gametype_top300 <- aoe2[aoe2$rank <= 300, ] %>%
+  group_by(game_type) %>%
+  summarise(avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses))
+
+gametype_top300_long <- gather(gametype_top300, game_type)
+gametype_top300_long$map <- rep(c("1v1 Random Map", "Team Random Map"), 3)
+
+gametype_top300_long <- gametype_top300_long[, c(3, 1, 2)]
+gametype_top300_long
+
+ggplot(gametype_top300_long, aes(fill = map, y = value, x = game_type)) + 
+  geom_bar(position="dodge", stat="identity") + 
+  ggtitle("Popularity by type of Map/Game Mode for top 300 players each")
+
+```
+
+So with just the top 300 players, we actually find a combination of our answers, as the top individual players play more games, but lose significantly more than the average team random top 300 player, who averages about 25-30 more wins.
+
+Lastly, lets calculate this difference to see the difference in competition/dominance between the best players in each map.
+
+```{r}
+gametype_top300$avgpercwins = gametype_top300$avgwins / gametype_top300$avggames
+gametype_top300[, c(1,5)]
+```
+
+On average, the team random map player has a 13% better win rate than the top 1v1 random map players. 
