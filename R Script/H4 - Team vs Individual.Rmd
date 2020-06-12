@@ -7,7 +7,9 @@ Hypothesis: Team Random Map is a more active more than Individual.
 
 ```{r}
 library(ggplot2)
+library(dplyr)
 library(tidyr)
+aoe2 <- read.csv("../Data/aoe2_leaderboard_sample.csv")
 ```
 
 Let's first see how ratings compare for the leaderboards.

@@ -9,8 +9,20 @@ library(dplyr)
 library(ggplot2)
 library(ggdendro)
 library(ggthemes)
+library(tidyr)
 aoe2 <- read.csv("../Data/aoe2_leaderboard_sample.csv")
 ```
+
+After completing hypothesis 3, and seeing different groups of players with their wins and losses balance, we decided to look at what the game defines as the best players and compare that to a more consistent metric across sports, percentage of wins.
+
+Let's first acknowledge that rank and rating are exact measurements of each other: If a player plays more and wins more their rating will rise and their rank will go up via the leaderboard.
+
+```{r}
+ggplot(aoe2) +
+  geom_point(aes(rank, rating, color = game_type))
+```
+
+So now, we need to decide how to subset the data with the best players, by rank or by rating. After some tests with graphs (discarded ones in scratch), the one that subsetted our clusters the most logically and the data as a whole seemed to be rating at around its inflection point:
 
 ```{r}
 aoe2 %>%
@@ -21,13 +33,21 @@ aoe2 %>%
               color = "darkred")
 ```
 
+So we will use only players who have at least a 1250 rating.
+We also found that only a small amount of players who play individual have a rating of 1250, so we decided to also only use the team random map players.
+
 ```{r}
 aoe2$perc_wins <- aoe2$wins / aoe2$games
 aoe2$scalerating <- scale(aoe2$rating)
 aoe2$scalepercwins <- scale(aoe2$perc_wins)
 
-filtered_aoe2 <- aoe2[aoe2$rating > 2200, ]
+filtered_aoe2 <- aoe2[aoe2$rating > 2200 & aoe2$game_type == "Team Random Map", ]
+head(filtered_aoe2)
+```
 
+So we now need to decide which clustering method to use. Since we don't know how many groups of players we want to use, we will utilize hierarchical modeling and the dendrogram to determine how many clusters we will use. 
+
+```{r}
 aoe2_hclust <- 
   hclust(dist(
     dplyr::select(filtered_aoe2,
@@ -47,32 +67,41 @@ filtered_aoe2 <- filtered_aoe2 %>%
 
 filtered_aoe2 %>%
   ggplot(aes(x = scalerating, y = scalepercwins,
-             color = clusters)) +
-  geom_point() +
-  ggthemes::scale_color_colorblind() +
-  theme_bw() +
-  ggtitle("Clustering of Best Players") +
-  xlab("Rating, normalized") +
-  ylab("Percentage of Wins, normalized") +
-  theme(legend.position = "bottom")
-
-filtered_aoe2 %>%
-  ggplot(aes(x = scalerating, y = scalepercwins,
              color = clusters, label = name)) +
   geom_point() +
   ggthemes::scale_color_colorblind() +
   theme_bw() +
-  ggtitle("Clustering of Best Players") +
+  ggtitle("Clustering of Best 'Team Random Map' Players") +
   xlab("Rating, normalized") +
   ylab("Percentage of Wins, normalized") +
   theme(legend.position = "bottom")
 
 ```
+
+Via the dendrogram, we see a gap in the tree with 5 clusters. While splitting into 7 clusters may have a bigger gap, having 7 different types of players seemed excessive for this analysis and spread our data out too thin. 
+
+In order to understand these clusters in our graph, let's get the mean and sd of the percentage of wins to cluster them quantitatively. 
 
 ```{r}
 mean(aoe2$perc_wins)
 sd(aoe2$perc_wins)
 ```
+
+With this, we split our data into 5 player archetypes:
+1. Group 1 (Black Dots): The Greats
+- They have the most games played, the highest rating/rank, and the highest win percentage at 80% +
+2. Group 2 (Orage Dots): All Stars
+- The group with the 2nd highest average rating, but a lower win percentage at around 60-70%
+3. Group 3 (Blue Dots): Competitive Players
+- The highest spread of rating (and therefore games played), but a consistent win percentage of around 55-60%. These players create the biggest cluster in our set.
+4. Group 4 (Green Dots): The Casuals
+- These players, in relative to the rest of this selected data, have the lowest win % at around 50% therefore not too high of rating.
+5. Group 5 (Yellow Dots): The Underrated / Unproven
+- This group defined the purpose of our clustering, as they had 2nd highest win percentage as a cluster at about 75-80%, but do not have the number of games to back up their greatness. This puts them lower in the rating and the rank, to be put with the average "competitive players" and "casuals". 
+
+An important note to make is that with more games, Group 5 can fall into the Greats if their win percentage stays consistent, but we predict they would most likely fall into the orange dots when they play enough games.
+
+Lastly, let's quantify each cluster to see if any last trends can be seen.
 
 ```{r}
 filtered_aoe2 %>%
@@ -80,3 +109,6 @@ filtered_aoe2 %>%
   summarise(avgrank = mean(rank), avgrating = mean(rating), avggames = mean(games), avgwins = mean(wins), avglosses = mean(losses), avgpercwins = mean(perc_wins))
 ```
 
+An interesting note here is the average number of games column. While we knew cluster 5 would have a very low average number of games compared to the rest of the clusters. We did not expect group 4 to have such a higher amount of average games compared to the rest of the clusters. This does support their name as the "casuals", but brings up an interesting question to be explored in another ESports report:
+
+Does playing a high number of games inevitably converge your winning percentage down? Is there a tactic in not playing too many games in a row / a lot over the same period of time? 

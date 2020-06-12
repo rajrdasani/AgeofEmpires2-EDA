@@ -7,7 +7,9 @@ AOE2 is most popularly played in the US
 
 ```{r}
 library(ggplot2)
+library(dplyr)
 library(tidyr)
+aoe2 <- read.csv("../Data/aoe2_leaderboard_sample.csv")
 ```
 
 Let's first start off by seeing the countries with the most amount of players 
