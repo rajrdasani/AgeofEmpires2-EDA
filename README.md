@@ -8,10 +8,15 @@
   - hypothesis testing 
   - exploratory data analysis
   - data visualization
+- All scripting information/work will be in the "RScript" folder, labeled appropriately 
 
-## TOC: 
+## TOC (for presentation) 
  1. Game Overview
- 2. Hypothesis 1: Teams Drops vs Individual Drops
- 3. Hypothesis 2: Subset by Country 
- 4. Hypothesis 3: Wins and Losses Correlation 
- 5. Clustering Example: Player Tiers
+ 2. Topic 1: Teams Drops vs Individual Drops
+ - Hypothesis: A player is more likely to get dropped from a Team Match.
+ 3. Topic 2: Most Popular/Competitive Country 
+ - Hypothesis: AOE2 will be most popular and competitive in the US 
+ 4. Topic 3: Cprrelation between Wins and Losses 
+ - Hypothesis: There will be a correlation between wins and losses because there is no set number of games
+ 5. Clustering: Player Tiers in Team Random Map
+ - Used Hierarchial Modeling 
