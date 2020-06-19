@@ -12,11 +12,11 @@
 
 ## TOC (for presentation) 
  1. Game Overview
- 2. Topic 1: Teams Drops vs Individual Drops (code written by partner)
+ 2. Teams Drops vs Individual Drops (code written by partner)
  - Hypothesis: A player is more likely to get dropped from a Team Match.
- 3. Topic 2: Most Popular/Competitive Country 
+ 3. Most Popular/Competitive Country 
  - Hypothesis: AOE2 will be most popular and competitive in the US 
- 4. Topic 3: Correlation between Wins and Losses 
+ 4. Correlation between Wins and Losses 
  - Hypothesis: There will be a correlation between wins and losses because there is no set number of games
  5. Clustering: Player Tiers in Team Random Map
  - Used Hierarchial Modeling 
